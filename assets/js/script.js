@@ -33,15 +33,22 @@ var loadSchedule = function(){
     }else{
          schedule = checkSchedule;
     }
-}
+};
 
 var saveSchedule = function(){
     localStorage.setItem("schedule", JSON.stringify(schedule));
+};
+
+var clearSchedule = function(){
+    for(var i =0; i<24; i++){
+        schedule[i].event = "";
+    }
 }
 
 var createSchedule = function(){
     //create the html elements dynamically, use global variables above to specify which hours you'd like to show
-    var scheduleEl = $("<div>").addClass("description");
+    var scheduleEl = $("<div>")
+        .addClass("description");
     for(var i=startTime; i<=endingTime; i++){
         //create the html elements
         var blockEl = $("<div>").attr({class:"time-block", data:i});
@@ -59,8 +66,14 @@ var createSchedule = function(){
 
 
         //create the form and button elements.
-        var textareaEl = $("<textarea>").text(schedule[i].event).addClass("row past");
-        var saveBtnEl = $("<button>").text("Save").attr({class:"saveBtn row", type:"click"});
+        var textareaEl = $("<textarea>")
+            .text(schedule[i].event)
+            .addClass("row past")
+            .attr({id:i});
+        var saveBtnEl = $("<button>")
+            .addClass("saveBtn row")
+            .text("Save")
+            .attr({type:"button",id:"btn"});
         blockEl.append(timeEl,textareaEl,saveBtnEl);
         scheduleEl.append(blockEl);
         
@@ -69,41 +82,20 @@ var createSchedule = function(){
     }
 };
 
-//event listener to get value once clicking another element.
-$(".container").on("blur", "textarea", function(){
-    //get the textarea's current value/text
-    var text =$(this)
-        .val()
-        .trim();
-    
-    //get the parent ul's id attribute
-    var hour = $(this)
-        .closest(".time-block")
-        .attr("data");
+//add event listener to save buttons. If that button is click, only that text will get stored in local storage
+$(document).ready(function(){
+    $(".description #btn").click(function(){
+        //first get the index from the button clicked
+        var hour = $(this)
+            .closest(".time-block")
+            .attr("data");
+        
+            var text = $("#"+ hour).val();
+            schedule[hour].event = text;
+            saveSchedule();
+    })
+});
 
-    schedule[hour].event = text;
-    saveSchedule();
-    conLogSched();
-
-})
-
-var conLogSched = function(){
-    for(i=startTime; i<endingTime; i++){
-        if(i.aM)
-            var ending = ":00 AM";
-        else
-            var ending = ":00 PM";
-        console.log(schedule[i].hour + ending + ": " + schedule[i].event);
-    }
-}
 loadSchedule();
 createSchedule();
-
-// //event listener, click button to save to local storage
-// $(".saveBtn").click(function(){
-//     //enter in code to save item into local storage
-//     //first find the time of the block associated to the click
-//     //get input value from that time block
-//     //save text content into correct value in schedule obj
-//     saveSchedule();
-// })
+clearSchedule();

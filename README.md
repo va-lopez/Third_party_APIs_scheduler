@@ -12,6 +12,8 @@ When the user clicks in the empty input area, the box will be highlighted to sho
 
 When the user selects "save", the user's inputs are saved into the local storage and are displayed once more when the user refreshes.
 
+Since moment.js is outdated, I used Luxon as an alternative which was written by one of the creators of moment.js.
+
 Link to deployed application:
 https://va-lopez.github.io/Third_party_APIs_scheduler/
 

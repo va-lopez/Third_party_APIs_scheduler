@@ -1,7 +1,16 @@
 var schedule = [];
 var startTime = 9;
 var endingTime = 17; // 5 oclock in 24 hour format, must be less than 24.
+var currentTime;
+var DateTime =luxon.DateTime;
+var date;
+var hour;
+var day;
+var month;
+var weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
+//check to see if there is a schedule already on the local storage, if not, create an empty array
 var loadSchedule = function(){
     var checkSchedule = JSON.parse(localStorage.getItem("schedule"));
 
@@ -35,43 +44,68 @@ var loadSchedule = function(){
     }
 };
 
+//using lexon to get the date and time to use in later functions
+var getTime = function(){
+    const dT = DateTime.now();
+    month = dT.month;
+    day = dT.weekday;
+    date = dT.day;
+    hour = dT.hour;
+}
+
+//save schedule to local storage
 var saveSchedule = function(){
     localStorage.setItem("schedule", JSON.stringify(schedule));
 };
 
+//clear out all the text from the "textarea"s, not being used currently but good to add eventually
 var clearSchedule = function(){
     for(var i =0; i<24; i++){
-        schedule[i].event = "";
+         schedule[i].event = "";
     }
 }
 
+//create the html elments dynamically
 var createSchedule = function(){
+    //first display the current day on the top at the header
+    $("#currentDay").text(weekDays[day]+ ", " + months[month] +" " + date + "th");
+
     //create the html elements dynamically, use global variables above to specify which hours you'd like to show
     var scheduleEl = $("<div>")
         .addClass("description");
+
+    //global variables above set up which hours get shown on the planner
     for(var i=startTime; i<=endingTime; i++){
         //create the html elements
-        var blockEl = $("<div>").attr({class:"time-block", data:i});
-        var timeEl = $("<p>").addClass("hour row");
+        var blockEl = $("<div>").attr({class:"time-block row", data:i});
+        var timeEl = $("<p>").addClass("hour col-lg-1 col-md-2 col-sm-3 col-4 d-flex justify-content-end pt-2");
 
         //add the text content for the AM hours and then PM hours
         if(i==0)
-            timeEl.text('12:00 AM');
+            timeEl.text('12 AM');
         else if (i<12)
-            timeEl.text(i + ':00 AM');
+            timeEl.text(i + ' AM');
         else if (i===12)
-            timeEl.text('12:00 PM');
+            timeEl.text('12 PM');
         else
-            timeEl.text((i-12) + ':00 PM');
+            timeEl.text((i-12) + ' PM');
 
+        //check the current hour and figure out what the class should be to create different colors for past hours, current hour, and future hours.
+        var classColor;
+        if(i<hour)
+            classColor = "past";
+        else if (i===hour)
+            classColor = "present";
+        else
+            classColor = "future";
 
         //create the form and button elements.
         var textareaEl = $("<textarea>")
             .text(schedule[i].event)
-            .addClass("row past")
+            .addClass("col-lg-10 col-md-8 col-sm-6 col-4 "+classColor)
             .attr({id:i});
         var saveBtnEl = $("<button>")
-            .addClass("saveBtn row")
+            .addClass("saveBtn col-lg-1 col-md-2 col-sm-3 col-4")
             .text("Save")
             .attr({type:"button",id:"btn"});
         blockEl.append(timeEl,textareaEl,saveBtnEl);
@@ -96,6 +130,12 @@ $(document).ready(function(){
     })
 });
 
+//when a text area is selected, the box gets highlighted
+$(".list-group").on("blur","textarea", function(){
+    this.trigger("focus");
+})
+
 loadSchedule();
+getTime();
 createSchedule();
-clearSchedule();
+//clearSchedule();

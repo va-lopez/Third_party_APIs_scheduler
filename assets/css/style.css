@@ -34,7 +34,7 @@ textarea{
 .row {
   white-space: pre-wrap;
   height: 80px;
-  border-top: 1px solid black;
+  border-top: 1px solid white;
 }
 /*section for hour blocks*/
 .hour {
@@ -59,6 +59,7 @@ textarea{
 }
 /*Button to save inputs */
 .saveBtn {
+  border: none;
   border-left: 1px solid black;
   border-top-right-radius: 15px;
   border-bottom-right-radius: 15px;
@@ -69,4 +70,16 @@ textarea{
 .saveBtn i:hover {
   font-size: 20px;
   transition: all .3s ease-in-out;
+}
+
+/*Media query*/
+@media screen and (max-width: 576px){
+  .display-3{
+    font-size: 48px;
+  }
+
+  .lead{
+    padding-left:20px;
+    padding-right:20px;
+  }
 }
